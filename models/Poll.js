@@ -14,7 +14,7 @@ const pollSchema = new mongoose.Schema(
     ],
     type: {
       type: String,
-      enum: ["multiple-choice", "yes-no"],
+      enum: ["multiple-choice", "single-choice"],
       required: true,
     },
     expiresAt: {

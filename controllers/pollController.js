@@ -16,10 +16,13 @@ const createPoll = async (req, res) => {
       expiresAt,
     });
 
-    await poll.save();
+    const savedPoll = await poll.save(); // Changed variable name from res to savedPoll
+
+    console.log(savedPoll);
 
     res.status(201).json({ success: true, pollId: poll._id });
   } catch (error) {
+    console.error("Poll creation error:", error); // Added error logging
     res.status(500).json({ success: false, message: "Error creating poll" });
   }
 };
@@ -40,4 +43,26 @@ const getPoll = async (req, res) => {
   }
 };
 
-module.exports = { createPoll, getPoll };
+const getRecentPolls = async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const recentPolls = await Poll.find({
+      expiresAt: { $gt: currentDate },
+    })
+      .sort({ createdAt: -1 })
+      .limit(10);
+
+    res.json({
+      success: true,
+      polls: recentPolls,
+    });
+  } catch (error) {
+    console.error("Error fetching recent polls:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching recent polls",
+    });
+  }
+};
+
+module.exports = { createPoll, getPoll, getRecentPolls };
